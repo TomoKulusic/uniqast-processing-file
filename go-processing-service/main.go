@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"processing_service/logger"
 	"processing_service/services"
@@ -26,6 +27,9 @@ func main() {
 
 	// ✅ Start listening for messages
 	services.SubscribeToFileProcessing(nc)
+
+	// ✅ Console log indicating successful startup
+	fmt.Println("✅ Processing Service is up and running, listening for NATS messages...")
 
 	// Keep the service running
 	select {}

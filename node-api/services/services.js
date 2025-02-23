@@ -2,7 +2,6 @@ const File = require('../server/models/file.js');
 const logger = require('../logger/logger.js');
 const { PROCESSING_STATUSES } = require("../conifg/constants.js");
 
-
 // Create a new file entry in DB
 async function createFileEntry(fileName, filePath) {
     try {
