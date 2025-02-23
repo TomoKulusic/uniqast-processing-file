@@ -3,9 +3,7 @@ const { sendNATSRequest } = require('./natsHandler');
 const { createFileEntry, getFileById, getAllFiles, deleteFile } = require('../services/services.js');
 const path = require('path');
 const logger = require('../logger/logger.js');
-// require('dotenv').config({ path: './../.env' });
-const { HTTP_STATUS } = require("../conifg/constants.js");
-require('dotenv').config();
+require('dotenv').config({ path: __dirname + '/../.env' });const { HTTP_STATUS } = require("../conifg/constants.js");
 
 const app = express();
 app.use(express.json());
