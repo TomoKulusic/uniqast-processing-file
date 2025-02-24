@@ -1,14 +1,12 @@
 version: '3.8'
 
 services:
-  # NATS Message Broker
   nats:
     image: nats:latest
     container_name: nats-server
     ports:
       - "4222:4222"
 
-  # MySQL Database
   db:
     image: mysql:8
     container_name: mysql-db
@@ -20,38 +18,42 @@ services:
       MYSQL_PASSWORD: tomok123
     ports:
       - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Node.js Dependency Setup
   node-api:
-    image: node:18-bullseye
-    container_name: node-api-setup
-    working_dir: /usr/src/app
+    build: ./node-api
+    container_name: node-api
+    environment:
+      NODE_ENV: docker
     env_file:
-      - ./node-api/.env
+      - ./node-api/.env.docker
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      nats:
+        condition: service_started
     volumes:
-      - ./node-api:/usr/src/app
-    command: >
-      sh -c "npm install && echo '✅ Node.js dependencies installed' && tail -f /dev/null"
+      - ./Files:/app/files
+      - ./node-api/logs:/usr/src/app/logs
 
-  # Golang Dependency Setup
   go-processing-service:
-    image: golang:1.23
-    container_name: go-processing-setup
-    working_dir: /usr/src/processor
+    build: ./go-processing-service
+    container_name: go-processing-service
+    environment:
+      GO_ENV: docker
     env_file:
-      - ./go-processing-service/.env
+      - ./go-processing-service/.env.docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - nats
+      - db
     volumes:
-      - ./go-processing-service:/usr/src/processor
-    command: >
-      sh -c "go mod tidy && echo '✅ Golang dependencies installed' && tail -f /dev/null"
-
-volumes:
-  mysql_data:
+      - ./Files:/app/files
+      - ./go-processing-service/logs:/app/logs

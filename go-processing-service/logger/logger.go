@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"io"
 	"os"
 	"path/filepath"
 
@@ -18,17 +19,21 @@ func init() {
 		os.MkdirAll(logDir, 0755)
 	}
 
-	// Configure log file
-	logFile, err := os.OpenFile(filepath.Join(logDir, "../logs/app.log"), os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err == nil {
-		Log.SetOutput(logFile)
+	// Corrected log file path
+	logFilePath := filepath.Join(logDir, "app.log")
+	logFile, err := os.OpenFile(logFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
+	if err != nil {
+		Log.Warnf("Failed to log to file, using default stderr: %v", err)
+		Log.SetOutput(os.Stdout)
 	} else {
-		Log.Warn("Failed to log to file")
+		// Logs to both stdout and the file
+		Log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 	}
 
 	// Set log format and level
 	Log.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
 	})
-	Log.SetLevel(logrus.InfoLevel) // Change to logrus.DebugLevel for more details
+	Log.SetLevel(logrus.InfoLevel)
 }

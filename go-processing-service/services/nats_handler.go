@@ -48,34 +48,30 @@ func handleFileProcessing(nc *nats.Conn, msg *nats.Msg) {
 	logger.Log.Infof("Processing file: %s (%s)", fileMsg.FileName, fileMsg.FilePath)
 
 	// ✅ Call MP4 parser function
-	boxes, err := ParseMP4File(fileMsg.FilePath)
+	success, outputPath, err := ParseMP4File(fileMsg.FilePath)
 	if err != nil {
 		logger.Log.Errorf("Error processing MP4 file: %v", err)
-		sendNATSResponse(nc, fileMsg.ID, false, "Error processing file", nil, err.Error())
+		sendNATSResponse(nc, fileMsg.ID, false, "Error processing file", "", err.Error())
 		return
 	}
 
-	// ✅ Extract `ftyp` and `moov` using parser function
-	ftyp, moov := ExtractFtypAndMoov(boxes)
-
 	// ✅ Validate extracted boxes and send response
-	if ftyp != nil && moov != nil {
+	if success {
 		// Success: Both `ftyp` and `moov` are found
-		selectedBoxes := []models.Box{*ftyp, *moov}
-		sendNATSResponse(nc, fileMsg.ID, true, "Successfully extracted ftyp & moov", &selectedBoxes, "")
+		sendNATSResponse(nc, fileMsg.ID, true, "Successfully extracted ftyp & moov", outputPath, "")
 	} else {
 		// Failure: One or both boxes are missing
-		sendNATSResponse(nc, fileMsg.ID, false, "Missing ftyp or moov", nil, "")
+		sendNATSResponse(nc, fileMsg.ID, false, "Missing ftyp or moov", "", "")
 	}
 }
 
 // ✅ Function to send NATS response
-func sendNATSResponse(nc *nats.Conn, id int, success bool, message string, boxes *[]models.Box, errorMessage string) {
+func sendNATSResponse(nc *nats.Conn, id int, success bool, message string, filePath string, errorMessage string) {
 	response := models.ProcessedFileResponse{
-		ID:      id,
-		Success: success,
-		Message: message,
-		Boxes:   boxes,
+		ID:       id,
+		Success:  success,
+		Message:  message,
+		FilePath: filePath,
 	}
 
 	// If there's an error, include it in the response

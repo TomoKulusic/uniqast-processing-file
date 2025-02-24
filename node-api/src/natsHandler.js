@@ -1,10 +1,8 @@
 const nats = require("nats");
-const fs = require("fs");
 const path = require("path");
-const { File } = require("../server/connection.js");
 const logger = require("../logger/logger.js");
 const { getFileById, updateFileStatus } = require("../services/services.js");
-const { NATS_CHANNELS, DEFAULT_NATS_URL, PROCESSING_STATUSES, OUTPUT_FOLDER } = require("../conifg/constants.js");
+const { NATS_CHANNELS, DEFAULT_NATS_URL, PROCESSING_STATUSES } = require("../conifg/constants.js");
 
 // Function to initialize NATS connection
 async function connectToNATS() {
@@ -32,7 +30,7 @@ async function listenForResponses(nc) {
     for await (const msg of sub) {
         try {
             const response = JSON.parse(msg.data);
-            const { id, success, message, boxes } = response;
+            const { id, success, message, filePath } = response;
             logger.info(`Received response for File ID: ${id}`);
 
             const file = await getFileById(id);
@@ -41,35 +39,15 @@ async function listenForResponses(nc) {
                 continue;
             }
 
-            if (success) {
+            if (success && filePath) {
                 file.processingStatus = PROCESSING_STATUSES.SUCCESSFUL;
                 logger.info(`File ${id} processed successfully!`);
 
-                if (!fs.existsSync(OUTPUT_FOLDER)) {
-                    fs.mkdirSync(OUTPUT_FOLDER, { recursive: true });
-                }
-
-                const outputFilePath = path.join(OUTPUT_FOLDER, `${file.fileName}.mp4`);
-
-                if (boxes && boxes.length > 0) {
-                    const formattedBoxes = boxes.map(box => {
-                        const sizeBuffer = Buffer.alloc(4);
-                        sizeBuffer.writeUInt32BE(box.Size, 0);
-                        const typeBuffer = Buffer.alloc(4);
-                        typeBuffer.write(box.Type, 0, "ascii");
-                        const dataBuffer = Buffer.from(box.Data, "base64");
-
-                        return Buffer.concat([sizeBuffer, typeBuffer, dataBuffer]);
-                    });
-
-                    const combinedData = Buffer.concat(formattedBoxes);
-                    fs.writeFileSync(outputFilePath, combinedData);
-                    logger.info(`File saved to: ${outputFilePath}`);
-                }
-
-                await updateFileStatus(id, PROCESSING_STATUSES.SUCCESSFUL, outputFilePath);
+                await updateFileStatus(id, PROCESSING_STATUSES.SUCCESSFUL, filePath);
+                logger.info(`Updated file status and stored output path: ${filePath}`);
             } else {
                 await updateFileStatus(id, PROCESSING_STATUSES.FAILED);
+                logger.warn(`Processing failed for file ID ${id}: ${message}`);
             }
 
             await file.save();

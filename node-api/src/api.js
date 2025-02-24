@@ -3,7 +3,11 @@ const { sendNATSRequest } = require('./natsHandler');
 const { createFileEntry, getFileById, getAllFiles, deleteFile } = require('../services/services.js');
 const path = require('path');
 const logger = require('../logger/logger.js');
-require('dotenv').config({ path: __dirname + '/../.env' });const { HTTP_STATUS } = require("../conifg/constants.js");
+const { HTTP_STATUS } = require("../conifg/constants.js");
+const dotenv = require('dotenv');
+
+const envFile = process.env.NODE_ENV === 'docker' ? '.env.docker' : '.env.dev';
+dotenv.config({ path: path.join(__dirname, '../', envFile) });
 
 const app = express();
 app.use(express.json());
@@ -11,15 +15,15 @@ app.use(express.json());
 // API to Request File Processing
 app.post('/process-file', async (req, res) => {
     try {
-        const { filePath } = req.body;
-        if (!filePath) {
-            return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Missing required filePath' });
+        const { fileName } = req.body;
+        if (!fileName) {
+            return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Missing required fileName' });
         }
 
-        console.log(filePath)
+        const filePath = path.join(process.env.FILES_DIR, fileName);
 
         // Extract file name and extension
-        const fileName = path.basename(filePath, path.extname(filePath));
+        // const fileName = path.basename(filePath, path.extname(filePath));
         const fileExtension = path.extname(filePath).toLowerCase();
 
         if (fileExtension !== '.mp4') {

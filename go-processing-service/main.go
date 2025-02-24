@@ -6,8 +6,24 @@ import (
 	"processing_service/logger"
 	"processing_service/services"
 
+	"github.com/joho/godotenv"
+
 	"github.com/nats-io/nats.go"
 )
+
+func init() {
+	env := os.Getenv("GO_ENV")
+	if env == "" {
+		env = "dev"
+	}
+
+	envFile := ".env." + env
+	if err := godotenv.Load(envFile); err != nil {
+		logger.Log.Fatalf("Error loading %s file: %v", envFile, err)
+	}
+
+	logger.Log.Infof("Loaded environment: %s", env)
+}
 
 func main() {
 	// ✅ Load NATS URL from environment variable
