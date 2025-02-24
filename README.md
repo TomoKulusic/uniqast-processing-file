@@ -8,16 +8,16 @@ Additional things added:
 - Added environment configs
 - Docker
 
-## 🚀 How to Run the Project
+## How to Run the Project
 
-### ✅ Step 1: Clone the repository
+### Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/TomoKulusic/uniqast-processing-file.git
 cd uniqast-processing-file
 ```
 
-### ✅ Step 2: Start Docker Containers
+### Step 2: Start Docker Containers
 
 This sets up your MySQL database, NATS broker, Node.js API, and Golang processing service:
 
@@ -25,7 +25,7 @@ This sets up your MySQL database, NATS broker, Node.js API, and Golang processin
 docker-compose up --build
 ```
 
-### ✅ Docker Run (Services run automatically)
+### Docker Run (Services run automatically)
 
 Docker Compose will automatically build and run:
 
@@ -34,9 +34,9 @@ Docker Compose will automatically build and run:
 - Node.js API
 - Golang Processing Service
 
-## 🧑‍💻 Local Development Setup
+## Local Development Setup
 
-### ✅ Step 1: Install dependencies
+### Step 1: Install dependencies
 
 ```bash
 # Node.js dependencies
@@ -48,7 +48,7 @@ cd ../go-processing-service
 go mod tidy
 ```
 
-### ✅ Step 2: Run Services Locally
+### Step 2: Run Services Locally
 
 **Run Node.js API:**
 
@@ -64,14 +64,14 @@ cd go-processing-service
 go run main.go
 ```
 
-## 📂 Input and Output Folders
+## Input and Output Folders
 
 - **Input files (MP4 videos):** `./Files/Mp4`
 - **Output files (Processed MP4):** `./Files/Output`
 
 These folders are used by both local and Docker environments.
 
-## ✅ Testing the Application
+## Testing the Application
 
 A Postman collection (`uniqast-processing.postman_collection.json`) for testing the API endpoints is available in the root folder of the project.
 
@@ -80,7 +80,7 @@ A Postman collection (`uniqast-processing.postman_collection.json`) for testing 
 ```json
 POST http://localhost:3000/process-file
 {
-  "filePath": "app/files/mp4/sample-video.mp4"
+  "filePath": "sample-video.mp4"
 }
 ```
 
@@ -92,7 +92,7 @@ Check the processed output MP4 file in:
 ./Files/Output
 ```
 
-## 🛠️ Stopping the Project
+## Stopping the Project
 
 Stop and remove Docker containers:
 
@@ -100,20 +100,20 @@ Stop and remove Docker containers:
 docker-compose down
 ```
 
-## 📋 Additional Information
+## Additional Information
 
 - MySQL exposed on port `3306`
 - NATS exposed on port `4222`
 - Node.js API runs on port `3000`
 - Golang service runs on port `8080`
 
-## 📜 Logs
+## Logs
 
 Logs are stored in:
 
 - **Node.js logs:** `./node-api/logs`
 - **Golang logs:** `./go-processing-service/logs`
 
-## 📝 Author
+## Author
 
 - Tomislav Kulusic
