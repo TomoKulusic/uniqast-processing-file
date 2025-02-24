@@ -1,6 +1,12 @@
 # Uniqast Processing File
 
-This project contains a Node.js API server, a Golang processing service, NATS message broker, and a MySQL database setup using Docker Compose.
+This project contains a Node.js API server, a Golang processing service, a NATS message broker, and a MySQL database setup using Docker Compose. The setup supports both Docker and local development environments.
+
+The purpose of this project is to extract ftyp and moov atom boxes form mp4 file and to store it as the mp4 file.
+
+Additional things added:
+- Added environment configs
+- Docker
 
 ## 🚀 How to Run the Project
 
@@ -13,17 +19,38 @@ cd uniqast-processing-file
 
 ### ✅ Step 2: Start Docker Containers
 
-This sets up your MySQL database and NATS broker, and installs Node.js and Golang dependencies:
+This sets up your MySQL database, NATS broker, Node.js API, and Golang processing service:
 
 ```bash
 docker-compose up --build
 ```
 
-### ✅ Step 3: Run Services Manually
+### ✅ Docker Run (Services run automatically)
+
+Docker Compose will automatically build and run:
+
+- MySQL Database
+- NATS Broker
+- Node.js API
+- Golang Processing Service
+
+## 🧑‍💻 Local Development Setup
+
+### ✅ Step 1: Install dependencies
+
+```bash
+# Node.js dependencies
+cd node-api
+npm install
+
+# Golang dependencies
+cd ../go-processing-service
+go mod tidy
+```
+
+### ✅ Step 2: Run Services Locally
 
 **Run Node.js API:**
-
-Open a new terminal:
 
 ```bash
 cd node-api
@@ -32,33 +59,61 @@ node src/api.js
 
 **Run Golang Processing Service:**
 
-Open another terminal:
-
 ```bash
 cd go-processing-service
 go run main.go
 ```
 
-## Logs are located
+## 📂 Input and Output Folders
 
-Ensure all services run without errors. Logs can be monitored at:
+- **Input files (MP4 videos):** `./Files/Mp4`
+- **Output files (Processed MP4):** `./Files/Output`
 
-- **Node.js logs:** `./logs`
-- **Go logs:** `./logs`
+These folders are used by both local and Docker environments.
+
+## ✅ Testing the Application
+
+A Postman collection (`uniqast-processing.postman_collection.json`) for testing the API endpoints is available in the root folder of the project.
+
+### Make a POST request to process a file:
+
+```json
+POST http://localhost:3000/process-file
+{
+  "filePath": "app/files/mp4/sample-video.mp4"
+}
+```
+
+### Verify output:
+
+Check the processed output MP4 file in:
+
+```
+./Files/Output
+```
 
 ## 🛠️ Stopping the Project
 
-Stop and remove containers:
+Stop and remove Docker containers:
 
 ```bash
 docker-compose down
 ```
 
+## 📋 Additional Information
+
 - MySQL exposed on port `3306`
 - NATS exposed on port `4222`
 - Node.js API runs on port `3000`
+- Golang service runs on port `8080`
+
+## 📜 Logs
+
+Logs are stored in:
+
+- **Node.js logs:** `./node-api/logs`
+- **Golang logs:** `./go-processing-service/logs`
 
 ## 📝 Author
 
 - Tomislav Kulusic
-
