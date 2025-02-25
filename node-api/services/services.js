@@ -50,7 +50,7 @@ async function updateFileStatus(fileId, status, processedFilePath = null) {
 
         file.processingStatus = status;
         if (processedFilePath) {
-            file.processedFilePath = processedFilePath;
+            file.processedFilePath = processedFilePath.replace(/\\/g, '/');
         }
         await file.save();
 

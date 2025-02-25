@@ -20,10 +20,9 @@ app.post('/process-file', async (req, res) => {
             return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Missing required fileName' });
         }
 
-        const filePath = path.join(process.env.FILES_DIR, fileName);
+        const filePath = path.join(process.env.FILES_DIR, fileName).replace(/\\/g, '/');
 
         // Extract file name and extension
-        // const fileName = path.basename(filePath, path.extname(filePath));
         const fileExtension = path.extname(filePath).toLowerCase();
 
         if (fileExtension !== '.mp4') {
