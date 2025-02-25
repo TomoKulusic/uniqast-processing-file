@@ -6,6 +6,7 @@ The purpose of this project is to extract ftyp and moov atom boxes form mp4 file
 
 Additional things added:
 - Docker
+- Logs
 
 ## How to Run the Project
 
