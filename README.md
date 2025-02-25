@@ -1,8 +1,8 @@
-# Uniqast Processing File
+# README
 
 This project contains a Node.js API server, a Golang processing service, a NATS message broker, and a MySQL database setup using Docker Compose. The setup supports both Docker and local development environments.
 
-The purpose of this project is to extract ftyp and moov atom boxes form mp4 file and to store it as the mp4 file.
+The purpose of this project is to extract ftyp and moov atom boxes from an MP4 file and store it as the MP4 file.
 
 Additional things added:
 - Docker
@@ -62,6 +62,16 @@ Check the processed output MP4 file in:
 ./Files/Output
 ```
 
+### Testing with Other MP4 Files
+
+If you need to test the application with other MP4 files, place them in the **input folder**:
+
+```
+./Files/Mp4
+```
+
+Then modify the `filePath` in the POST request accordingly.
+
 ## Stopping the Project
 
 Stop and remove Docker containers:
@@ -87,3 +97,4 @@ Logs are stored in:
 ## Author
 
 - Tomislav Kulusic
+
