@@ -5,7 +5,6 @@ This project contains a Node.js API server, a Golang processing service, a NATS 
 The purpose of this project is to extract ftyp and moov atom boxes form mp4 file and to store it as the mp4 file.
 
 Additional things added:
-- Added environment configs
 - Docker
 
 ## How to Run the Project
@@ -33,36 +32,6 @@ Docker Compose will automatically build and run:
 - NATS Broker
 - Node.js API
 - Golang Processing Service
-
-## Local Development Setup
-
-### Step 1: Install dependencies
-
-```bash
-# Node.js dependencies
-cd node-api
-npm install
-
-# Golang dependencies
-cd ../go-processing-service
-go mod tidy
-```
-
-### Step 2: Run Services Locally
-
-**Run Node.js API:**
-
-```bash
-cd node-api
-node src/api.js
-```
-
-**Run Golang Processing Service:**
-
-```bash
-cd go-processing-service
-go run main.go
-```
 
 ## Input and Output Folders
 
